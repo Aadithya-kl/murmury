@@ -229,5 +229,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\n{table(rows)}\n\n{markdown_table(rows)}")
     return 2 if all(row[1].startswith("failed") for row in rows) else 0
 
+
 if __name__ == "__main__":
     sys.exit(main())
