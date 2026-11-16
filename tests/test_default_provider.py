@@ -4,7 +4,6 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import pytest
 
-from copilot import providers
 from copilot.setup import default_provider, settings_store
 
 

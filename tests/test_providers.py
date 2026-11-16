@@ -153,7 +153,6 @@ def test_answers_use_the_given_address():
     assert str(copilot.client.base_url).rstrip("/") == "http://mac-mini.local:11434/v1"
 
 
-
 def test_unknown_or_missing_ids_fall_back_to_default():
     """A renamed id, or one saved by an older version, quietly gives Anthropic instead of breaking setup."""
     assert providers.provider(None) is providers.BY_ID[providers.DEFAULT]
