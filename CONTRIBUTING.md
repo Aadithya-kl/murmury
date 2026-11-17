@@ -2,7 +2,40 @@
 
 Issues, ideas and pull requests are welcome. If Murmury helps you, a star on GitHub helps others find it.
 
-## Run it from source
+Here to learn? [LEARNING.md](LEARNING.md) walks through the code in four tracks, from tests to the Windows
+port.
+
+## Your first pull request in 30 minutes
+
+The tests run on macOS, Windows and Linux, so most level 1 issues need no Mac (each issue says if it does).
+
+1. **Sign the CLA first.** Read the short [agreement](docs/CLA.md) and sign it with your GitHub account
+   on [CLA Assistant](https://cla-assistant.io/GianlucaBave/murmury) (one click). Make sure the email on
+   your commits is one your GitHub account knows (`git config user.email`): a commit from an unknown email
+   blocks the check and the merge.
+2. **Get the code and the tools.** Install [uv](https://docs.astral.sh/uv/), then:
+
+   ```bash
+   git clone https://github.com/YOUR-NAME/murmury && cd murmury
+   uv sync
+   ```
+
+   (Fork the repository on GitHub first, and clone your fork.)
+3. **Run the tests.** They should all pass before you change anything:
+
+   ```bash
+   MURMURY_TEST_SETTINGS=1 uv run --with pytest python -m pytest tests -q
+   ```
+
+   On Windows PowerShell: `$env:MURMURY_TEST_SETTINGS="1"; uv run --with pytest python -m pytest tests -q`
+4. **Pick an issue.** Choose a [level 1 issue nobody has yet](https://github.com/GianlucaBave/murmury/issues?q=is%3Aopen+label%3A%22level+1%22+no%3Aassignee).
+   Each one says which files to touch, what to check and when it's done.
+5. **Claim it with a short plan.** Comment on the issue: which file you'll add or change and what you'll
+   test. The first clear plan gets the issue. Wait until it is assigned to you before you write code.
+6. **Open the pull request.** Run the tests again, push to a branch on your fork and open a pull request
+   with "Closes #N" in the description.
+
+## Run the app from source
 
 You need a Mac with Apple Silicon, macOS 13 or later, [uv](https://docs.astral.sh/uv/) and the Xcode command
 line tools.
@@ -21,7 +54,8 @@ recording permission, which is how the app hears the call's audio.
 | Path | What |
 |---|---|
 | `audiotap/main.swift` | system audio and mic capture (ScreenCaptureKit) |
-| `copilot/listen.py` | local transcription (mlx-whisper) |
+| `copilot/listen.py` | live listening: audio from the helper, cut into utterances |
+| `copilot/stt.py` | speech to text: mlx-whisper on macOS, faster-whisper elsewhere |
 | `copilot/material.py` | PDF, Excel and text into one prompt block |
 | `copilot/pipeline.py` | question check and answer orchestration |
 | `copilot/answer.py` | Anthropic answers, answer style and formats |
@@ -52,7 +86,8 @@ recording permission, which is how the app hears the call's audio.
 
 ## How to take an issue
 
-1. Comment on the issue that you'd like to work on it. We assign it to you, usually within a day.
+1. Comment on the issue with a short plan: what you'll change and how you'll test it. The first clear plan
+   gets the issue, and we assign it to you, usually within a day.
 2. One issue at a time, please, so others get a chance too.
 3. Open a pull request within a week, even a draft. If you need more time, say so in the issue; without news
    for a week, the issue opens up again.
