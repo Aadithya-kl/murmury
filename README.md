@@ -355,6 +355,7 @@ trying it with a service other than Anthropic and reporting what breaks
 **Learn by contributing.** Students and newcomers: [LEARNING.md](LEARNING.md) is a path through the real
 code in four tracks (tests, answer evals, desktop features, the Windows port), each with what you learn,
 the files to read first and the open issues to start from. Most level 1 issues need no Mac.
+Instructors: [TEACHING.md](TEACHING.md) explains how to bring a class.
 
 ## License
 

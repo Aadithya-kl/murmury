@@ -12,6 +12,8 @@ within a few days.
 New here? [CONTRIBUTING.md](CONTRIBUTING.md) has "Your first pull request in 30 minutes": setup, running
 the tests and claiming an issue.
 
+Teaching a course? [TEACHING.md](TEACHING.md) explains how to bring a class to Murmury.
+
 ## Track 1: tests (level 1, no Mac needed)
 
 **What you learn:** pytest (fixtures, `tmp_path`, `monkeypatch`, `parametrize`), replacing an API or a
