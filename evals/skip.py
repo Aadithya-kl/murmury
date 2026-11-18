@@ -20,12 +20,19 @@ show them. An empty reply counts as a skip, because the window would show nothin
     uv run python -m evals.skip --provider ollama --model gemma3:12b
     uv run python -m evals.skip --provider lm-studio --model qwen3-8b --runs 3
     uv run python -m evals.skip --provider ollama --model gemma3:4b qwen3:4b llama3.2:3b
+    uv run python -m evals.skip --provider ollama --model gemma3:4b qwen3:4b --json skip-results.json
 
 --model takes one or more names. With one, the output is the report below and nothing else. With two or more,
 each model gets that report, and one table at the end puts them side by side (a model that cannot be loaded
 gets a row that says so, and the others still run). --provider and --model work as in the app (copilot/providers.py). Anthropic is not measured: it has its own
 question check (Claude Haiku) instead of a SKIP. The exit status is 0 when the run finished, whatever the
 counts: they are a measurement, not a pass or fail (2 when no model could be run).
+
+--json PATH also writes the run to a file, to compare one run with another or plot them: the provider, the
+runs, and for each model, in the order given, the counts and times the report prints (unrounded; a time is
+null when no line was skipped or answered) and every line with whether it was answered, the time and what the
+window would have shown. A model that could not be run is in the file with its error and no lines. Without
+--json, nothing is written.
 """
 
 from __future__ import annotations
@@ -35,7 +42,7 @@ import json
 import statistics
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 import openai
@@ -173,10 +180,39 @@ def summarise(model: str, results: list[Result]) -> list[str]:
             _median([r for r in results if r.answered])]
 
 
+def _seconds(seconds: list[float]) -> dict | None:
+    """The numbers _times() prints, unrounded; None when there is no such line."""
+    if not seconds:
+        return None
+    return {"median": statistics.median(seconds), "slowest": max(seconds), "lines": len(seconds)}
+
+
+def as_json(model: str, results: list[Result]) -> dict:
+    """One model for --json: the numbers report() prints, unrounded, and every line."""
+    wrong = sum(r.false_answer or r.false_skip for r in results)
+    return {"model": model,
+            "error": None,
+            "answered_when_it_should_skip": sum(r.false_answer for r in results),
+            "should_skip": sum(r.line.expect == SKIP for r in results),
+            "skipped_when_it_should_answer": sum(r.false_skip for r in results),
+            "should_answer": sum(r.line.expect == ANSWER for r in results),
+            "accuracy": 100 * (len(results) - wrong) / len(results) if results else None,
+            "time_to_skip": _seconds([r.seconds for r in results if not r.answered]),
+            "time_to_first_word": _seconds([r.seconds for r in results if r.answered]),
+            "lines": [asdict(r) for r in results]}
+
+
 def failed_row(model: str, error: object) -> list[str]:
     """A model that could not be loaded or reached: it says so and the other cells stay empty."""
     reason = " ".join(str(error).split()).replace("|", "/")
     return [model, f"failed: {reason}" if reason else "failed", "-", "-", "-", "-"]
+
+
+def failed_json(model: str, error: object) -> dict:
+    """A model that could not be loaded or reached, for --json: its error and no lines."""
+    return {"model": model,
+            "error": str(error),
+            "lines": []}
 
 
 def table(rows: list[list[str]]) -> str:
@@ -202,6 +238,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", required=True, nargs="+", metavar="MODEL",
                         help="the answer model, for example gemma3:12b on ollama; several names are compared in one table")
     parser.add_argument("--runs", type=int, default=1, help="times each line is run; counts are out of lines x runs")
+    parser.add_argument("--json", type=Path, metavar="PATH",
+                        help="also write the results to this file as JSON")
     args = parser.parse_args(argv)
 
     service = providers.provider(args.provider)
@@ -213,6 +251,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(f"no {service.name} key: set {' or '.join(service.env)}, or save one on the app's setup screen")
 
     rows: list[list[str]] = []
+    entries: list[dict] = []
     for model in args.model:
         try:
             results = evaluate(lambda prompt: build_copilot(service, key, model, prompt), max(args.runs, 1))
@@ -220,13 +259,18 @@ def main(argv: list[str] | None = None) -> int:
             where = "" if service.key_required else f" (is it running at {service.base_url}?)"
             print(f"Could not run {model} on {service.name}{where}: {error}", file=sys.stderr)
             rows.append(failed_row(model, error))
+            entries.append(failed_json(model, error))
             continue
         if any(not row[1].startswith("failed") for row in rows):
             print()  # a blank line between one model's report and the next
         report(results, f"{model} on {service.name}")
         rows.append(summarise(model, results))
+        entries.append(as_json(model, results))
     if len(args.model) > 1:
         print(f"\n{table(rows)}\n\n{markdown_table(rows)}")
+    if args.json:
+        data = {"provider": service.id, "runs": max(args.runs, 1), "models": entries}
+        args.json.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return 2 if all(row[1].startswith("failed") for row in rows) else 0
 
 
