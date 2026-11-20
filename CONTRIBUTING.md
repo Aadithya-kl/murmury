@@ -31,7 +31,8 @@ The tests run on macOS, Windows and Linux, so most level 1 issues need no Mac (e
 4. **Pick an issue.** Choose a [level 1 issue nobody has yet](https://github.com/GianlucaBave/murmury/issues?q=is%3Aopen+label%3A%22level+1%22+no%3Aassignee).
    Each one says which files to touch, what to check and when it's done.
 5. **Claim it with a short plan.** Comment on the issue: which file you'll add or change and what you'll
-   test. The first clear plan gets the issue. Wait until it is assigned to you before you write code.
+   test. We pick the clearest plan, not the first comment, and give priority to people who haven't
+   contributed yet. Wait until it is assigned to you before you write code.
 6. **Open the pull request.** Run the tests again, push to a branch on your fork and open a pull request
    with "Closes #N" in the description.
 
@@ -86,8 +87,9 @@ recording permission, which is how the app hears the call's audio.
 
 ## How to take an issue
 
-1. Comment on the issue with a short plan: what you'll change and how you'll test it. The first clear plan
-   gets the issue, and we assign it to you, usually within a day.
+1. Comment on the issue with a short plan: what you'll change and how you'll test it. It's not first come,
+   first served: the issue goes to the clearest plan, and when plans are close, to someone who hasn't
+   contributed yet. We usually assign within a day or two.
 2. One issue at a time, please, so others get a chance too.
 3. Open a pull request within a week, even a draft. If you need more time, say so in the issue; without news
    for a week, the issue opens up again.
