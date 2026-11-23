@@ -94,12 +94,16 @@ file working on several operating systems with platform markers.
 **Where it stands:**
 
 - Done: `uv sync` works on Windows and Linux ([#44](https://github.com/GianlucaBave/murmury/issues/44)),
-  and speech-to-text runs there with faster-whisper ([#47](https://github.com/GianlucaBave/murmury/issues/47)).
+  speech-to-text runs there with faster-whisper ([#47](https://github.com/GianlucaBave/murmury/issues/47)),
+  and the floating window stays out of screen sharing on Windows
+  ([#101](https://github.com/GianlucaBave/murmury/issues/101)).
 - In progress: a Windows audio helper using WASAPI loopback ([#5](https://github.com/GianlucaBave/murmury/issues/5))
   and an audio source interface so each platform plugs in its own capture
   ([#46](https://github.com/GianlucaBave/murmury/issues/46)).
-- Next: run the whole app on Windows end to end, keep the floating window out of screen sharing there, and
-  package it. New issues for these will appear in this track.
+- Next: keep the screen awake during a call ([#143](https://github.com/GianlucaBave/murmury/issues/143), level 1),
+  global shortcuts ([#144](https://github.com/GianlucaBave/murmury/issues/144)),
+  run the whole app end to end in a real call ([#145](https://github.com/GianlucaBave/murmury/issues/145)),
+  and a Windows build people can install ([#146](https://github.com/GianlucaBave/murmury/issues/146)).
 
 ## How a pull request gets merged
 
